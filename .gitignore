@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/src/.vs/TvShow
+
+### DotnetCore ###
+# .NET Core build folders
+bin/
+obj/
+.vs/
