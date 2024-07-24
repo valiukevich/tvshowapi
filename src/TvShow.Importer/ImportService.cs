@@ -1,29 +1,37 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Nest;
 using TvShow.Domain;
 using TvShow.Domain.Models;
 using TvShow.Importer.Sources.TvMaze;
 using TvShow.Importer.Sources.TvMaze.Models;
+using TvShow.Infrastructure.ElasticSearch.Extensions;
+using IndexName = TvShow.Infrastructure.ElasticSearch.IndexName;
 
 namespace TvShow.Importer;
 
-public class ImportService
+public class ImportService : BackgroundService
 {
+    private readonly IElasticClient _elasticClient;
+    private readonly ILogger<ImportService> _logger;
     private readonly TvMazeClient _tvMazeClient;
     private readonly ITvShowRepository _tvShowRepository;
-    private readonly ILogger<ImportService> _logger;
 
 
-    public ImportService(TvMazeClient tvMazeClient, ITvShowRepository tvShowRepository, ILogger<ImportService> logger)
+    public ImportService(TvMazeClient tvMazeClient, ITvShowRepository tvShowRepository, ILogger<ImportService> logger, IElasticClient elasticClient)
     {
         _tvMazeClient = tvMazeClient;
         _tvShowRepository = tvShowRepository;
         _logger = logger;
+        _elasticClient = elasticClient;
     }
 
     public async Task ImportAllData(CancellationToken cancellationToken)
     {
         try
         {
+            await _elasticClient.CreateIndexIfNotExists<Domain.Models.TvShow>(IndexName.TvShow, cancellationToken);
+
             await ImportShows(cancellationToken);
         }
         catch (Exception e)
@@ -46,7 +54,7 @@ public class ImportService
 
             await _tvShowRepository.SaveShows(shows, cancellationToken);
 
-            _logger.LogInformation("Page {PageNumber} of tv maze shows was imported successfully", pageNumber);
+            _logger.LogInformation("Page {PageNumber} of {Count} tv maze shows was imported successfully", pageNumber, shows.Count());
             pageNumber++;
         }
 
@@ -59,10 +67,17 @@ public class ImportService
 
         var tasks = shows.Select(async show =>
         {
-            var cast = await _tvMazeClient.GetCastForShow(show.Id, cancellationToken);
+            var cast = await LoadCast(show, cancellationToken);
             return ConvertToTvShowModel(show, cast);
         });
         return await Task.WhenAll(tasks);
+    }
+
+    private async Task<IEnumerable<Cast>> LoadCast(Show show, CancellationToken cancellationToken)
+    {
+        var policyResult = await TvMazeApiPolicy.HttpError()
+            .ExecuteAndCaptureAsync(() => _tvMazeClient.GetCastForShow(show.Id, cancellationToken));
+        return policyResult.Result;
     }
 
     private static Domain.Models.TvShow ConvertToTvShowModel(Show show, IEnumerable<Cast> cast)
@@ -71,12 +86,17 @@ public class ImportService
         {
             Id = show.Id,
             Name = show.Name,
-            Cast = cast.OrderByDescending(x => x.BirthDate).Select(x => new TvShowCast
+            Cast = cast.Select(x => x.Person).OrderByDescending(x => x.BirthDate).Select(x => new TvShowCast
             {
                 Id = x.Id,
                 Name = x.Name,
                 BirthDate = x.BirthDate
             }).ToList()
         };
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        return ImportAllData(stoppingToken);
     }
 }

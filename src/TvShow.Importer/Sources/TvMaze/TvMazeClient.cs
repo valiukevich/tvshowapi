@@ -18,7 +18,7 @@ public class TvMazeClient
         return await ReadResponseAsJson<Show>(response, cancellationToken);
     }
 
-    public async Task<IEnumerable<Cast>> GetCastForShow(string showId, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Cast>> GetCastForShow(long showId, CancellationToken cancellationToken)
     {
         var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"shows/{showId}/cast"), cancellationToken);
         return await ReadResponseAsJson<Cast>(response, cancellationToken);
@@ -34,7 +34,13 @@ public class TvMazeClient
                 return Enumerable.Empty<T>();
             }
 
-            return JsonSerializer.Deserialize<List<T>>(content);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };  
+
+            var list = JsonSerializer.Deserialize<List<T>>(content, options);
+            return list;
         }
 
         throw new HttpRequestException("Unexpected http error occurred when calling TV Maze API", inner: null, statusCode: response.StatusCode);
