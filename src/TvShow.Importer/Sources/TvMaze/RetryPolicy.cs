@@ -16,7 +16,7 @@ internal class RetryPolicy
                 sleepDurationProvider: (retryCount, response, context) => SleepDurationProvider(retryCount, response),
                 onRetryAsync: (response, timespan, retryCount, context) =>
                 {
-                    Console.WriteLine($"Retry {retryCount} on {response.Result.StatusCode} status");
+                    //Console.WriteLine($"Retry {retryCount} on {response.Result.StatusCode} status");
                     return Task.CompletedTask;
                 }
             );
@@ -27,7 +27,10 @@ internal class RetryPolicy
         return Policy.Handle<HttpRequestException>()
             .WaitAndRetryAsync(
                 Backoff.ExponentialBackoff(TimeSpan.FromSeconds(1), 10),
-                (exception, timespan, retryCount, context) => { Console.WriteLine($"Retry {retryCount} on {exception.GetType().Name}: {exception.Message}"); }
+                (exception, timespan, retryCount, context) =>
+                {
+                    //Console.WriteLine($"Retry {retryCount} on {exception.GetType().Name}: {exception.Message}");
+                }
             );
     }
 

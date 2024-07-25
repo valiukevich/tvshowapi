@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvShow.Api", "TvShow.Api\Tv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvShow.Domain", "TvShow.Domain\TvShow.Domain.csproj", "{1B4B13FE-0E12-406D-841B-3F1E41851C49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvShow.Infrastructure.ElasticSearch", "..\TvShow.Infrastructure.ElasticSearch\TvShow.Infrastructure.ElasticSearch.csproj", "{BE76E84F-B921-4CB4-98FE-294379C6FBF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TvShow.Infrastructure.ElasticSearch", "TvShow.Infrastructure.ElasticSearch\TvShow.Infrastructure.ElasticSearch.csproj", "{D425F217-E063-4937-A7F8-C27230FE23CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{1B4B13FE-0E12-406D-841B-3F1E41851C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B4B13FE-0E12-406D-841B-3F1E41851C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B4B13FE-0E12-406D-841B-3F1E41851C49}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE76E84F-B921-4CB4-98FE-294379C6FBF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE76E84F-B921-4CB4-98FE-294379C6FBF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE76E84F-B921-4CB4-98FE-294379C6FBF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE76E84F-B921-4CB4-98FE-294379C6FBF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D425F217-E063-4937-A7F8-C27230FE23CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D425F217-E063-4937-A7F8-C27230FE23CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D425F217-E063-4937-A7F8-C27230FE23CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D425F217-E063-4937-A7F8-C27230FE23CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

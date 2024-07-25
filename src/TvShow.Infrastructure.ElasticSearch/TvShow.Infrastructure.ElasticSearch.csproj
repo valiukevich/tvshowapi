@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\TvShow.Domain\TvShow.Domain.csproj" />
+    <ProjectReference Include="..\TvShow.Domain\TvShow.Domain.csproj" />
   </ItemGroup>
 
 </Project>

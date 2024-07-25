@@ -12,7 +12,7 @@ public class TvMazeClient
         _httpClient = httpClient;
     }
 
-    public async Task<IEnumerable<Show>> GetShowsByPage(int page, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Show>> GetShowsByPage(int page, CancellationToken cancellationToken)
     {
         var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"shows?page={page}"), cancellationToken);
         return await ReadResponseAsJson<Show>(response, cancellationToken);

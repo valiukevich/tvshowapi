@@ -32,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TvShow.Infrastructure.ElasticSearch\TvShow.Infrastructure.ElasticSearch.csproj" />
     <ProjectReference Include="..\TvShow.Domain\TvShow.Domain.csproj" />
+    <ProjectReference Include="..\TvShow.Infrastructure.ElasticSearch\TvShow.Infrastructure.ElasticSearch.csproj" />
   </ItemGroup>
 
 </Project>

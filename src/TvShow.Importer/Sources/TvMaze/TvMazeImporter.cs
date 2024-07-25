@@ -26,7 +26,7 @@ public class TvMazeImporter : ITvShowSource
         var pageNumber = 0;
         while (true)
         {
-            _logger.LogDebug("Loading page {PageNumber} from tv maze shows", pageNumber);
+            _logger.LogInformation("Loading page {PageNumber} from tv maze shows", pageNumber);
             var shows = await LoadShowsByPageNumberWithCast(pageNumber, cancellationToken);
             if (!shows.Any())
             {
@@ -41,12 +41,32 @@ public class TvMazeImporter : ITvShowSource
     private async Task<IReadOnlyCollection<Domain.Models.TvShow>> LoadShowsByPageNumberWithCast(int pageNumber, CancellationToken cancellationToken)
     {
         var shows = await _tvMazeClient.GetShowsByPage(pageNumber, cancellationToken);
-        var tasks = shows.Select(async show =>
+        var showCounter = 0;
+        var taskBatches = shows
+            .Select(async show =>
+            {
+                var cast = await LoadShowCast(show, cancellationToken);
+                return ConvertToTvShowModel(show, cast);
+            })
+            .InBatches(50)
+            .Select(Task.WhenAll);
+        var results = new List<Domain.Models.TvShow>();
+        try
         {
-            var cast = await LoadShowCast(show, cancellationToken);
-            return ConvertToTvShowModel(show, cast);
-        });
-        return await Task.WhenAll(tasks);
+            foreach (var taskBatch in taskBatches)
+            {
+                var batch = await taskBatch;
+                results.AddRange(batch);
+                _logger.LogInformation("\tLoaded cast for {ShowCounter}/{ShowCount} shows", showCounter += batch.Length, shows.Count);
+            }
+
+            return results.AsReadOnly();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Operation cancelled");
+            return new List<Domain.Models.TvShow>();
+        }
     }
 
     private async Task<IReadOnlyCollection<Cast>> LoadShowCast(Show show, CancellationToken cancellationToken)
@@ -54,8 +74,12 @@ public class TvMazeImporter : ITvShowSource
         _logger.LogDebug("Loading cast for {Show} from tv maze shows", show.Name);
         var policyResult = await RetryPolicy.HttpError()
             .ExecuteAndCaptureAsync(() => _tvMazeClient.GetCastForShow(show.Id, cancellationToken));
+        if (policyResult.FinalException != null)
+        {
+            throw policyResult.FinalException;
+        }
         var cast = policyResult.Result;
-        _logger.LogInformation("Loaded {CastCount} cast for {Show} from tv maze shows", cast.Count, show.Name);
+        _logger.LogDebug("Loaded {CastCount} cast for {Show} from tv maze shows", cast.Count, show.Name);
         return cast;
     }
 

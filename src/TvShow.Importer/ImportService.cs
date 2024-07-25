@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Nest;
 using TvShow.Domain;
-using TvShow.Importer.Sources.TvMaze;
 using TvShow.Infrastructure.ElasticSearch.Extensions;
 using IndexName = TvShow.Infrastructure.ElasticSearch.IndexName;
 
@@ -11,9 +10,9 @@ namespace TvShow.Importer;
 public class ImportService : BackgroundService
 {
     private readonly IElasticClient _elasticClient;
-    private readonly ILogger<ImportService> _logger;
     private readonly IEnumerable<ITvShowSource> _sources;
     private readonly ITvShowRepository _tvShowRepository;
+    private readonly ILogger<ImportService> _logger;
 
     public ImportService(
         IElasticClient elasticClient,
