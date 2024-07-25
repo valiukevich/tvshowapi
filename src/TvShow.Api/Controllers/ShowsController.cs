@@ -26,7 +26,7 @@ public class ShowsController : ControllerBase
         return Get(pageNumber, 20);
     }
 
-    [HttpGet("page/{pageNumber:int=0}/pageSize/{pageSize:int=20}")]
+    [HttpGet("page/{pageNumber:int=0}/size/{pageSize:int=20}")]
     public async Task<IEnumerable<Domain.Models.TvShow>> Get(int pageNumber, int pageSize)
     {
         var data = await _repository.GetShowsPaged(pageNumber, pageSize, CancellationToken.None);

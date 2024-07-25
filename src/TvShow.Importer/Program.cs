@@ -15,9 +15,10 @@ internal class Program
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<ITvShowRepository, TvShowRepository>();
+                services.AddTransient<ITvShowSource, TvMazeImporter>();
                 services
                     .AddHttpClient<TvMazeClient>(client => client.BaseAddress = new Uri("http://api.tvmaze.com"))
-                    .AddPolicyHandler(arg => TvMazeApiPolicy.RateLimit());
+                    .AddPolicyHandler(arg => RetryPolicy.TooManyRequests());
                 services.AddHostedService<ImportService>();
                 services.AddElasticSearch(new ElasticSearchSettings());
             }).Build();

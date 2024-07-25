@@ -1,6 +1,4 @@
-﻿using TvShow.Domain.Models;
-
-namespace TvShow.Domain;
+﻿namespace TvShow.Domain;
 
 public interface ITvShowRepository
 {

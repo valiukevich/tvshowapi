@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Http\" />
     <Folder Include="Sources\TvMaze\Models\" />
   </ItemGroup>
 
