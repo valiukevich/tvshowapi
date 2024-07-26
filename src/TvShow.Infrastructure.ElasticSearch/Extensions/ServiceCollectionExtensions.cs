@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
         var connectionSettings = new ConnectionSettings(settings.Url)
             .ServerCertificateValidationCallback((sender, cert, chain, errors) => true)
             .BasicAuthentication(settings.Username, settings.Password)
+            .EnableApiVersioningHeader()
             .DefaultMappingFor<Domain.Models.TvShow>(x => x.IndexName("shows"));
 
         var elasticClient = new ElasticClient(connectionSettings);
